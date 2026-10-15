@@ -1,0 +1,7 @@
+{
+  "project": "test-front",
+  "gates": {
+    "build": { "cmd": "npm install && npm run build", "timeout": 300 },
+    "test":  { "cmd": "npm test",                    "timeout": 120 }
+  }
+}

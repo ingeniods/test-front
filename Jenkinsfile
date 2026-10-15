@@ -42,7 +42,8 @@ pipeline {
             sonar-scanner \
               -Dsonar.host.url=http://sonarqube:9000 \
               -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.projectKey=test-front
+              -Dsonar.projectKey=test-front \
+              -Dsonar.javascript.node.timeout=600
           '''
         }
       }

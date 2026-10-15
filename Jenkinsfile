@@ -7,7 +7,7 @@ pipeline {
     stage('build') {
       // el socket es del host: montar $PWD no funciona — se monta el VOLUMEN
       // jenkins-home y se entra al mismo path del workspace.
-      steps { sh 'docker run --rm -v sandbox-jenkins-home:/var/jenkins_home -w "$PWD" node:22-alpine sh -c "npm install && npm run build"' }
+      steps { sh 'docker run --rm --network sandbox-net -v sandbox-jenkins-home:/var/jenkins_home -w "$PWD" node:22-alpine sh -c "npm install && npm run build"' }
     }
     stage('image') {
       when { anyOf { branch 'develop'; branch 'master' } }
@@ -37,7 +37,9 @@ pipeline {
       steps {
         withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
           sh '''
-            docker run --rm -v sandbox-jenkins-home:/var/jenkins_home -w "$PWD" \
+            # sin --network cae en `bridge` y `sonarqube` no resuelve
+            docker run --rm --network sandbox-net \
+              -v sandbox-jenkins-home:/var/jenkins_home -w "$PWD" \
               sonarsource/sonar-scanner-cli \
               -Dsonar.host.url=http://sonarqube:9000 \
               -Dsonar.token=$SONAR_TOKEN \

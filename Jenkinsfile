@@ -34,13 +34,12 @@ pipeline {
       }
     }
     stage('sonar') {
+      // sonar-scanner nativo en la imagen Jenkins (la imagen docker oficial
+      // es amd64-only y no trae Node — bajo qemu muere sin node).
       steps {
         withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
           sh '''
-            # sin --network cae en `bridge` y `sonarqube` no resuelve
-            docker run --rm --network sandbox-net \
-              -v sandbox-jenkins-home:/var/jenkins_home -w "$PWD" \
-              sonarsource/sonar-scanner-cli \
+            sonar-scanner \
               -Dsonar.host.url=http://sonarqube:9000 \
               -Dsonar.token=$SONAR_TOKEN \
               -Dsonar.projectKey=test-front
